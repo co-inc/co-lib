@@ -1,4 +1,4 @@
-package co.events 
+﻿package co.events 
 {
 	import co.debug.CoTrace;
 	import flash.display.DisplayObject;
@@ -69,7 +69,7 @@ package co.events
 		 */
 		static public function addEventListener(displayObject:DisplayObject, type:String, handler:Function):void 
 		{
-			removeEventListener(displayObject, type, null);
+			removeEventListener(displayObject, type, function(){} );
 			switch(type) {
 				case POINTER_DOWN:
 					displayObject.addEventListener(MouseEvent.MOUSE_DOWN, pointerDown);
@@ -166,7 +166,7 @@ package co.events
 		static private function pointerMove(e:MouseEvent):void 
 		{
 			var displayObject:DisplayObject = e.currentTarget as DisplayObject;
-			displayObject.dispatchEvent(getNewUserEvent(pointerMove, e));
+			displayObject.dispatchEvent(getNewUserEvent(POINTER_MOVE, e));
 		}
 		
 		/**
