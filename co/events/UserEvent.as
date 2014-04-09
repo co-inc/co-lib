@@ -17,7 +17,8 @@ package co.events
 		static public const POINTER_DOWN:String = "pointerDown";
 		static public const POINTER_UP:String = "pointerUp";
 		static public const POINTER_RUN:String = "pointerRun";
-		static public const POINTER_MOVE_FRAME:String = "pointerMoveFrame";
+		static public const POINTER_MOVE:String = "pointerMove";
+		static public const POINTER_DRAG:String = "pointerDrag";
 		
 		//MouseEvent only
 		public var buttonDown : Boolean 
@@ -54,6 +55,12 @@ package co.events
 
 		}
 		
+		public function removeEventListener():void 
+		{
+			
+		}
+
+		
 		/**
 		 * 
 		 * @param	displayObject
@@ -62,6 +69,7 @@ package co.events
 		 */
 		static public function addEventListener(displayObject:DisplayObject, type:String, handler:Function):void 
 		{
+			removeEventListener(displayObject, type, null);
 			switch(type) {
 				case POINTER_DOWN:
 					displayObject.addEventListener(MouseEvent.MOUSE_DOWN, pointerDown);
@@ -75,31 +83,90 @@ package co.events
 					displayObject.addEventListener(MouseEvent.CLICK, pointerRun);
 					displayObject.addEventListener(TouchEvent.TOUCH_TAP, pointerRun);
 					break;
-				case POINTER_MOVE_FRAME:
-					pointerMoveFrame(displayObject, handler);
+				case POINTER_MOVE:
+					displayObject.addEventListener(MouseEvent.MOUSE_MOVE,pointerMove);
+					displayObject.addEventListener(TouchEvent.TOUCH_MOVE,pointerMove);
+					break;
+				//case POINTER_DRAG:
+					//pointerDrag(displayObject, handler);
+					//break;
 			}
 			displayObject.addEventListener(type, handler);
 		}
 		
-		static private function pointerMoveFrame(displayObject:DisplayObject,handler:Function):void 
+		/**
+		 * 
+		 * @param	displayObject
+		 * @param	type
+		 * @param	handler
+		 */
+        static public function removeEventListener(displayObject:DisplayObject, type:String, handler:Function):void
+        {
+            switch(type) {
+                case POINTER_DOWN:
+                    displayObject.removeEventListener(MouseEvent.MOUSE_DOWN, pointerDown);
+                    displayObject.removeEventListener(TouchEvent.TOUCH_BEGIN, pointerDown);
+                    break;
+                case POINTER_UP:
+                    displayObject.removeEventListener(MouseEvent.MOUSE_UP, pointerUp);
+                    displayObject.removeEventListener(TouchEvent.TOUCH_END, pointerUp);
+                    break;
+                case POINTER_RUN:
+                    displayObject.removeEventListener(MouseEvent.CLICK, pointerRun);
+                    displayObject.removeEventListener(TouchEvent.TOUCH_TAP, pointerRun);
+                    break;
+				case POINTER_MOVE:
+					displayObject.removeEventListener(MouseEvent.MOUSE_MOVE,pointerMove);
+					displayObject.removeEventListener(TouchEvent.TOUCH_MOVE,pointerMove);
+					break;
+				//case POINTER_DRAG:
+					//displayObject.dispatchEvent(new RemoveEvent(POINTER_DRAG));
+					//break;
+            }
+            displayObject.removeEventListener(type, handler);
+        }
+		
+		
+		/**
+		 * 
+		 * @param	displayObject
+		 * @param	handler
+		 */
+		static private function pointerDrag(displayObject:DisplayObject,handler:Function):void 
 		{
-			var ue:UserEvent = null;
-			var _ue:UserEvent = ue;
-			displayObject.addEventListener(MouseEvent.MOUSE_MOVE,move);
-			displayObject.addEventListener(TouchEvent.TOUCH_MOVE,move);
-			displayObject.addEventListener(Event.ENTER_FRAME,enter);
-			
-			function move(e:Event):void {
-				var __ue:UserEvent=getNewUserEvent(POINTER_MOVE_FRAME, e);
-				if (ue == null) startEvent = __ue;
-				ue = __ue;
-			}
-			function enter(e:Event):void {
-				if (ue != _ue) {
-					displayObject.dispatchEvent(ue);
-					_ue = ue;
-				}
-			}
+			//var ue:UserEvent = null;
+			//var _ue:UserEvent = ue;
+			//
+			//UserEvent.addEventListener(Pointer)
+			//displayObject.addEventListener(MouseEvent.MOUSE_MOVE,move);
+			//displayObject.addEventListener(TouchEvent.TOUCH_MOVE,move);
+			//displayObject.addEventListener(Event.ENTER_FRAME, enter);
+			//
+			//displayObject.addEventListener(POINTER_DRAG, remove);
+			//
+			//function move(e:Event):void {
+				//var __ue:UserEvent=getNewUserEvent(POINTER_DRAG, e);
+				//if (ue == null) startEvent = __ue;
+				//ue = __ue;
+			//}
+			//function enter(e:Event):void {
+				//if (ue != _ue) {
+					//displayObject.dispatchEvent(ue);
+					//_ue = ue;
+				//}
+			//}
+			//function remove(e:RemoveEvent):void {
+				//displayObject.removeEventListener(MouseEvent.MOUSE_MOVE,move);
+				//displayObject.removeEventListener(TouchEvent.TOUCH_MOVE,move);
+				//displayObject.removeEventListener(Event.ENTER_FRAME, enter);
+				//displayObject.removeEventListener(POINTER_DRAG, remove);
+			//}
+		}
+		
+		static private function pointerMove(e:MouseEvent):void 
+		{
+			var displayObject:DisplayObject = e.currentTarget as DisplayObject;
+			displayObject.dispatchEvent(getNewUserEvent(pointerMove, e));
 		}
 		
 		/**
@@ -172,4 +239,11 @@ package co.events
 			return ue;
 		}	
 	}
+}
+import flash.events.Event;
+class RemoveEvent extends Event {
+	public function RemoveEvent(type:String, bubbles:Boolean = false, cancelable:Boolean = false) {
+		super(type, bubbles, cancelable);
+	}
+	
 }
