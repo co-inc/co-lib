@@ -19,6 +19,8 @@
 		static public const POINTER_RUN:String = "pointerRun";
 		static public const POINTER_MOVE:String = "pointerMove";
 		static public const POINTER_DRAG:String = "pointerDrag";
+		static public const POINTER_ROLL_OVER:String = "pointerRollOver";
+		static public const POINTER_ROLL_OUT:String = "pointerRollOut";
 		
 		//MouseEvent only
 		public var buttonDown : Boolean 
@@ -90,6 +92,14 @@
 				//case POINTER_DRAG:
 					//pointerDrag(displayObject, handler);
 					//break;
+				case POINTER_ROLL_OVER:
+					displayObject.addEventListener(MouseEvent.ROLL_OVER, pointerRollOver );
+					displayObject.addEventListener(TouchEvent.TOUCH_ROLL_OVER, pointerRollOver );
+					break;
+				case POINTER_ROLL_OUT:
+					displayObject.addEventListener(MouseEvent.ROLL_OUT, pointerRollOut );
+					displayObject.addEventListener(TouchEvent.TOUCH_ROLL_OUT, pointerRollOut );
+					break;
 			}
 			displayObject.addEventListener(type, handler);
 		}
@@ -122,6 +132,14 @@
 				//case POINTER_DRAG:
 					//displayObject.dispatchEvent(new RemoveEvent(POINTER_DRAG));
 					//break;
+				case POINTER_ROLL_OVER:
+					displayObject.removeEventListener(MouseEvent.ROLL_OVER, pointerRollOver );
+					displayObject.removeEventListener(TouchEvent.TOUCH_ROLL_OVER, pointerRollOver );
+					break;
+				case POINTER_ROLL_OUT:
+					displayObject.removeEventListener(MouseEvent.ROLL_OUT, pointerRollOut );
+					displayObject.removeEventListener(TouchEvent.TOUCH_ROLL_OUT, pointerRollOut );
+					break;
             }
             displayObject.removeEventListener(type, handler);
         }
@@ -196,6 +214,17 @@
 		static private function pointerUp(e:Event):void {
 			var displayObject:DisplayObject = e.currentTarget as DisplayObject;
 			displayObject.dispatchEvent(getNewUserEvent(POINTER_UP, e));
+		}
+		
+		
+		static private function pointerRollOver( e:Event ):void{
+			var displayObject:DisplayObject = e.currentTarget as DisplayObject;
+			displayObject.dispatchEvent(getNewUserEvent(POINTER_ROLL_OVER, e));
+		}
+		
+		static private function pointerRollOut( e:Event ):void{
+			var displayObject:DisplayObject = e.currentTarget as DisplayObject;
+			displayObject.dispatchEvent(getNewUserEvent(POINTER_ROLL_OUT, e));
 		}
 		
 		/**
