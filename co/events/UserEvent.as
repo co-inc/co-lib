@@ -217,11 +217,19 @@
 		}
 		
 		
+		/**
+		* ロールオーバー
+		* @param	e
+		*/
 		static private function pointerRollOver( e:Event ):void{
 			var displayObject:DisplayObject = e.currentTarget as DisplayObject;
 			displayObject.dispatchEvent(getNewUserEvent(POINTER_ROLL_OVER, e));
 		}
 		
+		/**
+		* ロールアウト
+		* @param	e
+		*/
 		static private function pointerRollOut( e:Event ):void{
 			var displayObject:DisplayObject = e.currentTarget as DisplayObject;
 			displayObject.dispatchEvent(getNewUserEvent(POINTER_ROLL_OUT, e));
