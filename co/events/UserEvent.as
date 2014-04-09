@@ -1,4 +1,4 @@
-package co.events 
+﻿package co.events 
 {
 	import co.debug.CoTrace;
 	import flash.display.DisplayObject;
@@ -68,6 +68,27 @@ package co.events
 			}
 			displayObject.addEventListener(type, handler);
 		}
+		
+		
+		static public function removeEventListener(displayObject:DisplayObject, type:String, handler:Function):void
+		{
+			switch(type) {
+				case POINTER_DOWN:
+					displayObject.removeEventListener(MouseEvent.MOUSE_DOWN, pointerDown);
+					displayObject.removeEventListener(TouchEvent.TOUCH_BEGIN, pointerDown);
+					break;
+				case POINTER_UP:
+					displayObject.removeEventListener(MouseEvent.MOUSE_UP, pointerUp);
+					displayObject.removeEventListener(TouchEvent.TOUCH_END, pointerUp);
+					break;
+				case POINTER_RUN:
+					displayObject.removeEventListener(MouseEvent.CLICK, pointerRun);
+					displayObject.removeEventListener(TouchEvent.TOUCH_TAP, pointerRun);
+					break;
+			}
+			displayObject.removeEventListener(type, handler);
+		}
+		
 		
 		static private function pointerRun(e:Event):void 
 		{
