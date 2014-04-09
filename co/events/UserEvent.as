@@ -17,6 +17,7 @@ package co.events
 		static public const POINTER_DOWN:String = "pointerDown";
 		static public const POINTER_UP:String = "pointerUp";
 		static public const POINTER_RUN:String = "pointerRun";
+		static public const POINTER_MOVE_FRAME:String = "pointerMoveFrame";
 		
 		//MouseEvent only
 		public var buttonDown : Boolean 
@@ -42,7 +43,10 @@ package co.events
 		public var altKey : Boolean 
 		public var shiftKey : Boolean 
 		public var commandKey : Boolean 
-		public var controlKey : Boolean 		
+		public var controlKey : Boolean
+		
+		//original
+		public var startEvent:UserEvent;
 		
 		public function UserEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) 
 		{
@@ -50,6 +54,12 @@ package co.events
 
 		}
 		
+		/**
+		 * 
+		 * @param	displayObject
+		 * @param	type
+		 * @param	handler
+		 */
 		static public function addEventListener(displayObject:DisplayObject, type:String, handler:Function):void 
 		{
 			switch(type) {
@@ -65,27 +75,68 @@ package co.events
 					displayObject.addEventListener(MouseEvent.CLICK, pointerRun);
 					displayObject.addEventListener(TouchEvent.TOUCH_TAP, pointerRun);
 					break;
+				case POINTER_MOVE_FRAME:
+					pointerMoveFrame(displayObject, handler);
 			}
 			displayObject.addEventListener(type, handler);
 		}
 		
+		static private function pointerMoveFrame(displayObject:DisplayObject,handler:Function):void 
+		{
+			var ue:UserEvent = null;
+			var _ue:UserEvent = ue;
+			displayObject.addEventListener(MouseEvent.MOUSE_MOVE,move);
+			displayObject.addEventListener(TouchEvent.TOUCH_MOVE,move);
+			displayObject.addEventListener(Event.ENTER_FRAME,enter);
+			
+			function move(e:Event):void {
+				var __ue:UserEvent=getNewUserEvent(POINTER_MOVE_FRAME, e);
+				if (ue == null) startEvent = __ue;
+				ue = __ue;
+			}
+			function enter(e:Event):void {
+				if (ue != _ue) {
+					displayObject.dispatchEvent(ue);
+					_ue = ue;
+				}
+			}
+		}
+		
+		/**
+		 * クリックorタップ
+		 * @param	e
+		 */
 		static private function pointerRun(e:Event):void 
 		{
 			var displayObject:DisplayObject = e.currentTarget as DisplayObject;
 			displayObject.dispatchEvent(getNewUserEvent(POINTER_RUN, e));
 		}
 		
+		/**
+		 * ダウン
+		 * @param	e
+		 */
 		static private function pointerDown(e:Event):void {
 			var displayObject:DisplayObject = e.currentTarget as DisplayObject;
 			displayObject.dispatchEvent(getNewUserEvent(POINTER_DOWN, e));
 			//CoTrace.log("pointerDown",displayObject,e);
 		}
 		
+		/**
+		 * アップ
+		 * @param	e
+		 */
 		static private function pointerUp(e:Event):void {
 			var displayObject:DisplayObject = e.currentTarget as DisplayObject;
 			displayObject.dispatchEvent(getNewUserEvent(POINTER_UP, e));
 		}
 		
+		/**
+		 * MouseEvent と　TouchEventの混合Eventを作成
+		 * @param	type
+		 * @param	e
+		 * @return
+		 */
 		static private function getNewUserEvent(type:String, e:Event):UserEvent 
 		{
 			var ue:UserEvent = new UserEvent(type);
@@ -119,8 +170,6 @@ package co.events
 			ue.controlKey = oe.controlKey;
 			
 			return ue;
-		}
-		
+		}	
 	}
-
 }
